@@ -146,6 +146,11 @@ impl SctpStream {
 	pub fn try_clone(&self) -> Result<SctpStream> {
 		return Ok(SctpStream(try!(self.0.try_clone())));
 	}
+	
+	/// Set non blocking.
+	pub fn set_nonblocking(&self, nonblocking: bool) -> Result<()> {
+	    self.0.set_nonblocking(nonblocking)
+    }
 }
 
 impl Read for SctpStream {
@@ -282,6 +287,11 @@ impl SctpEndpoint {
 	pub fn try_clone(&self) -> Result<SctpEndpoint> {
 		return Ok(SctpEndpoint(try!(self.0.try_clone())));
 	}
+
+	/// Set non blocking.
+	pub fn set_nonblocking(&self, nonblocking: bool) -> Result<()> {
+	    self.0.set_nonblocking(nonblocking)
+    }
 }
 
 #[cfg(target_os="windows")]
@@ -387,6 +397,11 @@ impl SctpListener {
 	pub fn try_clone(&self) -> Result<SctpListener> {
 		return Ok(SctpListener(try!(self.0.try_clone())));
 	}
+
+	/// Set non blocking.
+	pub fn set_nonblocking(&self, nonblocking: bool) -> Result<()> {
+	    self.0.set_nonblocking(nonblocking)
+    }
 }
 
 #[cfg(target_os="windows")]

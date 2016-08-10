@@ -30,6 +30,11 @@ mod win {
 		if sock == winapi::INVALID_SOCKET { return Err(Error::last_os_error()); }
 		return Ok(sock);
 	}
+
+	pub fn set_nonblocking(sock: SOCKET, blocking: bool) -> Result<()> {
+        // FIXME: Not yet implemented
+        Err(-1)
+    }
 }
 
 #[cfg(target_os="linux")]
@@ -50,6 +55,23 @@ mod linux {
 		if sock < 0 { return Err(Error::last_os_error()); }
 		return Ok(sock);
 	}
+
+	pub fn set_nonblocking(sock: SOCKET, nonblocking: bool) -> Result<()> {
+	    unsafe {
+	        let mut flags = libc::fcntl(sock, libc::F_GETFL, 0);
+	        if nonblocking {
+                flags = flags | libc::O_NONBLOCK
+            } else {
+	            flags = flags & !libc::O_NONBLOCK
+            };
+            let ret = libc::fcntl(sock, libc::F_SETFL, flags);
+            if ret == -1 {
+                Err(Error::last_os_error())
+            } else {
+                Ok(())
+            }
+        }
+    }
 }
 
 #[cfg(target_os="windows")]
@@ -266,6 +288,11 @@ impl SctpSocket {
 			};
 		}
 	}
+
+	/// Set non-blocking
+	pub fn set_nonblocking(&self, nonblocking: bool) -> Result<()> {
+	    set_nonblocking(self.0, nonblocking)
+    }
 
 	/// Accept connection to this socket
 	pub fn accept(&self) -> Result<(SctpSocket, SocketAddr)> {
